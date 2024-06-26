@@ -44,7 +44,7 @@ models_to_run = [
 ]
 
 datasets_to_run =  [
-    "nn5_weekly"
+    "australian_electricity_demand"
 ]
 
 max_history_len = 500
