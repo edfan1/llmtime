@@ -6,6 +6,7 @@ from models.validation_likelihood_tuning import get_autotuned_predictions_data
 from models.utils import grid_iter
 from models.llmtime import get_llmtime_predictions_data
 import numpy as np
+import time
 
 llama_hypers = dict(
     temp=1.0,
@@ -47,7 +48,10 @@ datasets_to_run =  [
 ]
 
 max_history_len = 500
+start_time = time.time()
 datasets = get_datasets()
+loading_time = time.time() - start_time
+print(f"Loading datasets took {loading_time:.2f} seconds")
 for dsname in datasets_to_run:
     print(f"Starting {dsname}")
     data = datasets[dsname]
@@ -68,9 +72,13 @@ for dsname in datasets_to_run:
             hypers = list(grid_iter(model_hypers[model]))
         parallel = True if is_gpt(model) else False
         num_samples = 5
+        hyper_start_time = time.time() - start_time
+        print(f"Starting hyperparameter tuning after {hyper_start_time:.2f} seconds")
         
         try:
             preds = get_autotuned_predictions_data(train, test, hypers, num_samples, model_predict_fns[model], verbose=False, parallel=parallel)
+            hyper_end_time = time.time() - (hyper_start_time + start_time)
+            print(f"Hyperparameter tuning took {hyper_start_time:.2f} seconds")
             medians = preds['median']
             targets = np.array(test)
             maes = np.mean(np.abs(medians - targets), axis=1) # (num_series)        
@@ -84,4 +92,6 @@ for dsname in datasets_to_run:
         with open(f'{output_dir}/{dsname}.pkl','wb') as f:
             pickle.dump(out_dict,f)
     print(f"Finished {dsname}")
+    total_time = time.time() - start_time
+    print(f"Total took {total_time:.2f} seconds")
     
