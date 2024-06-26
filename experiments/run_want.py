@@ -6,18 +6,6 @@ from models.validation_likelihood_tuning import get_autotuned_predictions_data
 from models.utils import grid_iter
 from models.llmtime import get_llmtime_predictions_data
 import numpy as np
-# import openai
-# openai.api_key = os.environ['OPENAI_API_KEY']
-# openai.api_base = os.environ.get("OPENAI_API_BASE", "https://api.openai.com/v1")
-
-# Specify the hyperparameter grid for each model
-# gpt3_hypers = dict(
-#     temp=0.7,
-#     alpha=0.9,
-#     beta=0,
-#     basic=False,
-#     settings=SerializerSettings(base=10, prec=3, signed=True, half_bin_correction=True),
-# )
 
 llama_hypers = dict(
     temp=1.0,
@@ -26,6 +14,7 @@ llama_hypers = dict(
     basic=False,
     settings=SerializerSettings(base=10, prec=3, time_sep=',', bit_sep='', plus_sign='', minus_sign='-', signed=True), 
 )
+
 
 model_hypers = {
     # 'text-davinci-003': {'model': 'text-davinci-003', **gpt3_hypers},
@@ -44,7 +33,7 @@ def is_gpt(model):
     return any([x in model for x in ['ada', 'babbage', 'curie', 'davinci', 'text-davinci-003', 'gpt-4']])
 
 # Specify the output directory for saving results
-output_dir = 'outputs/monash'
+output_dir = 'outputs/want'
 os.makedirs(output_dir, exist_ok=True)
 
 models_to_run = [
@@ -52,10 +41,9 @@ models_to_run = [
     'llama-7b',
     # 'llama-70b',
 ]
+
 datasets_to_run =  [
-    "weather", "covid_deaths", "solar_weekly", "tourism_monthly", "australian_electricity_demand", "pedestrian_counts",
-    "traffic_hourly", "hospital", "fred_md", "tourism_yearly", "tourism_quarterly", "us_births",
-    "nn5_weekly", "traffic_weekly", "saugeenday", "cif_2016", "bitcoin", "sunspot", "nn5_daily"
+    "nn5_weekly"
 ]
 
 max_history_len = 500
