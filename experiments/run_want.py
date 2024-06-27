@@ -44,7 +44,7 @@ models_to_run = [
 ]
 
 datasets_to_run =  [
-    "australian_electricity_demand"
+    "cif_2016"
 ]
 
 max_history_len = 500
