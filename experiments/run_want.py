@@ -44,7 +44,7 @@ models_to_run = [
 ]
 
 datasets_to_run =  [
-    "cif_2016"
+    "pedestrian_counts"
 ]
 
 max_history_len = 500
