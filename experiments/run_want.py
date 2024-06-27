@@ -44,7 +44,7 @@ models_to_run = [
 ]
 
 datasets_to_run =  [
-    "pedestrian_counts"
+    "nn5_daily"
 ]
 
 max_history_len = 500
