@@ -1,0 +1,1 @@
+sbatch -N 1 -n 1 -p a100-gpu --mem=128g -t 02-00:00:00 --qos gpu_access --gres=gpu:nvidia_a100-pcie-40gb:3 --wrap="python -m experiments.run_want"
