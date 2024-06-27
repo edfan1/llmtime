@@ -78,7 +78,7 @@ for dsname in datasets_to_run:
         try:
             preds = get_autotuned_predictions_data(train, test, hypers, num_samples, model_predict_fns[model], verbose=False, parallel=parallel)
             hyper_end_time = time.time() - (hyper_start_time + start_time)
-            print(f"Hyperparameter tuning took {hyper_start_time:.2f} seconds")
+            print(f"Hyperparameter tuning took {hyper_end_time:.2f} seconds")
             medians = preds['median']
             targets = np.array(test)
             maes = np.mean(np.abs(medians - targets), axis=1) # (num_series)        
