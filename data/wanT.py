@@ -37,8 +37,16 @@ def get_want_dataset(n=-1,testfrac=0.15, predict_steps=1000, egress = 'SACR', in
     edge = dg.get_edge_data(ingress, egress)['data']
     edge_name = dg.get_edge_data(ingress, egress)['name']
     datasets.append(edge_name)
-    splitpoint = len(edge) - predict_steps
-    train = edge.iloc[:splitpoint]
-    test = edge.iloc[splitpoint:]
+    # splitpoint = len(edge) - predict_steps
+    splitpoint = int(len(edge)*(1-testfrac))
+    train = edge.iloc[:splitpoint]['SACR_SUNN_out']
+    test = edge.iloc[splitpoint:]['SACR_SUNN_out']
     datas.append((train, test))
     return dict(zip(datasets,datas))
+
+def main():
+    x = get_want_dataset()['SUNN_SACR'][0]
+    print(x)
+
+if __name__ == '__main__':
+    main()
