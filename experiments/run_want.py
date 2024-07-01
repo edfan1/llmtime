@@ -1,6 +1,6 @@
 import os
 import pickle
-from data.monash import get_datasets
+from data.wanT import get_want_dataset
 from data.serialize import SerializerSettings
 from models.validation_likelihood_tuning import get_autotuned_predictions_data
 from models.utils import grid_iter
@@ -47,51 +47,48 @@ datasets_to_run =  [
     "nn5_daily"
 ]
 
-max_history_len = 500
 start_time = time.time()
-datasets = get_datasets()
+datasets = get_want_dataset()
 loading_time = time.time() - start_time
 print(f"Loading datasets took {loading_time:.2f} seconds")
-for dsname in datasets_to_run:
-    print(f"Starting {dsname}")
-    data = datasets[dsname]
+for dsname,data in datasets.items():
     train, test = data
-    train = [x[-max_history_len:] for x in train]
     if os.path.exists(f'{output_dir}/{dsname}.pkl'):
         with open(f'{output_dir}/{dsname}.pkl','rb') as f:
             out_dict = pickle.load(f)
     else:
         out_dict = {}
     
-    for model in models_to_run:
-        if model in out_dict:
-            print(f"Skipping {dsname} {model}")
-            continue
+    for model in ['llama-7b', 'gp', 'arima', 'N-HiTS']:
+        if model in out_dict and not is_gpt(model):
+            if out_dict[model]['samples'] is not None:
+                print(f"Skipping {dsname} {model}")
+                continue
+            else:
+                print('Using best hyper...')
+                hypers = [out_dict[model]['best_hyper']]
         else:
             print(f"Starting {dsname} {model}")
             hypers = list(grid_iter(model_hypers[model]))
         parallel = True if is_gpt(model) else False
-        num_samples = 5
+        num_samples = 20 if is_gpt(model) else 100
         hyper_start_time = time.time() - start_time
         print(f"Starting hyperparameter tuning after {hyper_start_time:.2f} seconds")
-        
+
         try:
-            preds = get_autotuned_predictions_data(train, test, hypers, num_samples, model_predict_fns[model], verbose=False, parallel=parallel)
+            preds = get_autotuned_predictions_data(train, test, hypers, num_samples, model_predict_fns[model], verbose=0, parallel=parallel)
             hyper_end_time = time.time() - (hyper_start_time + start_time)
             print(f"Hyperparameter tuning took {hyper_end_time:.2f} seconds")
-            medians = preds['median']
-            targets = np.array(test)
-            maes = np.mean(np.abs(medians - targets), axis=1) # (num_series)        
-            preds['maes'] = maes
-            preds['mae'] = np.mean(maes)
-            out_dict[model] = preds
+            if preds.get('NLL/D', np.inf) < np.inf:
+                out_dict[model] = preds
+            else:
+                print(f"Failed {dsname} {model}")
         except Exception as e:
             print(f"Failed {dsname} {model}")
             print(e)
             continue
         with open(f'{output_dir}/{dsname}.pkl','wb') as f:
             pickle.dump(out_dict,f)
-    print(f"Finished {dsname}")
-    total_time = time.time() - start_time
-    print(f"Total took {total_time:.2f} seconds")
     
+
+    print(f"Finished {dsname}")
