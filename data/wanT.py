@@ -30,7 +30,7 @@ def readData(fileName, timeCol=0):
     return DG
 
 
-def get_want_dataset(n=-1,testfrac=0.15, predict_steps=1000, egress = 'SCAR', ingress = 'SUNN'):
+def get_want_dataset(n=-1,testfrac=0.15, predict_steps=1000, egress = 'SACR', ingress = 'SUNN'):
     datasets = []
     datas = []
     dg = readData("./datasets/wanT/snmp_2018_1hourinterval.csv")
