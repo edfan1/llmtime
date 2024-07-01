@@ -33,7 +33,7 @@ def readData(fileName, timeCol=0):
 def get_want_dataset(n=-1,testfrac=0.15, predict_steps=1000, ingress = 'SCAR', egress = 'SUNN'):
     datasets = []
     datas = []
-    dg = readData('snmp_2018_1hourinterval.csv')
+    dg = readData("./datasets/wanT/snmp_2018_1hourinterval.csv")
     edge = dg.get_edge_data(ingress, egress)['data']
     edge_name = dg.get_edge_data(ingress, egress)['name']
     datasets.append(edge_name)
