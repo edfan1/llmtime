@@ -6,6 +6,8 @@ from models.validation_likelihood_tuning import get_autotuned_predictions_data
 from models.utils import grid_iter
 from models.llmtime import get_llmtime_predictions_data
 import numpy as np
+import time 
+
 # import openai
 # openai.api_key = os.environ['OPENAI_API_KEY']
 # openai.api_base = os.environ.get("OPENAI_API_BASE", "https://api.openai.com/v1")
