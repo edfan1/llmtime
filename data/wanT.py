@@ -39,14 +39,50 @@ def get_want_dataset(n=-1,testfrac=0.15, predict_steps=1000, egress = 'SACR', in
     datasets.append(edge_name)
     # splitpoint = len(edge) - predict_steps
     splitpoint = int(len(edge)*(1-testfrac))
-    train = edge.iloc[:splitpoint]['SACR_SUNN_out']
-    test = edge.iloc[splitpoint:]['SACR_SUNN_out']
+    # train = edge.iloc[:splitpoint]['SACR_SUNN_out']
+    # test = edge.iloc[splitpoint:]['SACR_SUNN_out']
+    scaler = StandardScaler()
+    # print(scaler.fit(edge['SACR_SUNN_out'].to_frame()))
+    # print(scaler.mean_)
+    scaled_data = pd.DataFrame(
+        np.round(
+            scaler.fit_transform(edge['SACR_SUNN_out'].to_frame()),
+              4))
+    print(scaled_data)
+    print(scaler.mean_)
+    train = scaled_data.iloc[:splitpoint]
+    test = scaled_data.iloc[splitpoint:]
     datas.append((train, test))
-    return dict(zip(datasets,datas))
+    return dict(zip(datasets,datas)), scaler
+
+def get_scaled_dataset(n=-1,testfrac=0.15, predict_steps=1000, egress = 'SACR', ingress = 'SUNN'):
+    datasets = []
+    datas = []
+    dg = readData("./datasets/wanT/snmp_2018_1hourinterval.csv")
+    edge = dg.get_edge_data(ingress, egress)['data']
+    edge_name = dg.get_edge_data(ingress, egress)['name']
+    datasets.append(edge_name)
+    # splitpoint = len(edge) - predict_steps
+    splitpoint = int(len(edge)*(1-testfrac))
+    # train = edge.iloc[:splitpoint]['SACR_SUNN_out']
+    # test = edge.iloc[splitpoint:]['SACR_SUNN_out']
+    scaler = StandardScaler()
+    # print(scaler.fit(edge['SACR_SUNN_out'].to_frame()))
+    # print(scaler.mean_)
+    scaled_data = pd.DataFrame(
+        np.round(
+            scaler.fit_transform(edge['SACR_SUNN_out'].to_frame()),
+              4))
+    print(scaled_data)
+    print(scaler.mean_)
+    train = scaled_data.iloc[:splitpoint]
+    test = scaled_data.iloc[splitpoint:]
+    datas.append((train, test))
+    return dict(zip(datasets,datas)), scaler
 
 def main():
-    x = get_want_dataset()['SUNN_SACR'][0]
-    print(x)
+    x = get_want_dataset()
+    # print(x)
 
 if __name__ == '__main__':
     main()

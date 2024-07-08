@@ -10,7 +10,7 @@ from models.darts import get_arima_predictions_data
 import pickle
 import matplotlib.pyplot as plt
 from models.validation_likelihood_tuning import get_autotuned_predictions_data
-from data.wanT import get_want_dataset
+from data.wanT import get_want_dataset, get_scaled_dataset
 import time
 
 
@@ -68,7 +68,7 @@ output_dir = 'outputs/want'
 os.makedirs(output_dir, exist_ok=True)
 
 start_time = time.time()
-datasets = get_want_dataset()
+datasets, scaler = get_scaled_dataset()
 loading_time = time.time() - start_time
 print(f"Loading datasets took {loading_time:.2f} seconds")
 for dsname,data in datasets.items():
@@ -79,7 +79,7 @@ for dsname,data in datasets.items():
     else:
         out_dict = {}
     
-    for model in ['llama-7b', 'gp', 'arima', 'N-HiTS']:
+    for model in ['llama-7b', 'arima']:
         if model in out_dict and not is_gpt(model):
             if out_dict[model]['samples'] is not None:
                 print(f"Skipping {dsname} {model}")
@@ -108,6 +108,7 @@ for dsname,data in datasets.items():
             print(e)
             continue
         with open(f'{output_dir}/{dsname}.pkl','wb') as f:
+            out_dict['scaler'] = scaler
             pickle.dump(out_dict,f)
     
 
