@@ -12,7 +12,10 @@ import matplotlib.pyplot as plt
 from models.validation_likelihood_tuning import get_autotuned_predictions_data
 from data.wanT import get_want_dataset, get_scaled_dataset
 import time
+import gc
+import torch
 
+torch.cuda.empty_cache()
 
 llama_hypers = dict(
     temp=1.0,
