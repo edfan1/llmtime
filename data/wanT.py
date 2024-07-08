@@ -64,15 +64,11 @@ def get_scaled_dataset(n=-1,testfrac=0.15, predict_steps=1000, egress = 'SACR', 
     datasets.append(edge_name)
     # splitpoint = len(edge) - predict_steps
     splitpoint = int(len(edge)*(1-testfrac))
-    # train = edge.iloc[:splitpoint]['SACR_SUNN_out']
-    # test = edge.iloc[splitpoint:]['SACR_SUNN_out']
     scaler = StandardScaler()
-    # print(scaler.fit(edge['SACR_SUNN_out'].to_frame()))
-    # print(scaler.mean_)
     scaled_data = pd.DataFrame(
         np.round(
             scaler.fit_transform(edge['SACR_SUNN_out'].to_frame()),
-              4))
+              4))[0]
     print(scaled_data)
     print(scaler.mean_)
     train = scaled_data.iloc[:splitpoint]
@@ -81,7 +77,7 @@ def get_scaled_dataset(n=-1,testfrac=0.15, predict_steps=1000, egress = 'SACR', 
     return dict(zip(datasets,datas)), scaler
 
 def main():
-    x = get_want_dataset()
+    x = get_scaled_dataset()
     # print(x)
 
 if __name__ == '__main__':
