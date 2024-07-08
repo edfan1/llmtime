@@ -14,8 +14,11 @@ from data.wanT import get_want_dataset, get_scaled_dataset
 import time
 import gc
 import torch
+import gc
 
 torch.cuda.empty_cache()
+del variables
+gc.collect()
 
 llama_hypers = dict(
     temp=1.0,
