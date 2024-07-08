@@ -68,7 +68,7 @@ def get_scaled_dataset(n=-1,testfrac=0.15, predict_steps=1000, egress = 'SACR', 
     scaled_data = pd.DataFrame(
         np.round(
             scaler.fit_transform(edge['SACR_SUNN_out'].to_frame()),
-              4))[0]
+              2))[0]
     print(scaled_data)
     print(scaler.mean_)
     train = scaled_data.iloc[:splitpoint]
