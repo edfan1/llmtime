@@ -17,7 +17,6 @@ import torch
 import gc
 
 torch.cuda.empty_cache()
-del variables
 gc.collect()
 
 llama_hypers = dict(
@@ -102,7 +101,9 @@ for dsname,data in datasets.items():
         print(f"Starting hyperparameter tuning after {hyper_start_time:.2f} seconds")
 
         try:
+            print(torch.cuda.memory_summary(device=None, abbreviated=False))
             preds = get_autotuned_predictions_data(train, test, hypers, num_samples, model_predict_fns[model], verbose=0, parallel=parallel)
+            print(torch.cuda.memory_summary(device=None, abbreviated=False))
             hyper_end_time = time.time() - (hyper_start_time + start_time)
             print(f"Hyperparameter tuning took {hyper_end_time:.2f} seconds")
             if preds.get('NLL/D', np.inf) < np.inf:
