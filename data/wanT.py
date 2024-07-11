@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import networkx as nx
 from collections import defaultdict
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler
 import datasets
 from datasets import load_dataset
 import os
@@ -39,21 +39,10 @@ def get_want_dataset(n=-1,testfrac=0.15, predict_steps=1000, egress = 'SACR', in
     datasets.append(edge_name)
     # splitpoint = len(edge) - predict_steps
     splitpoint = int(len(edge)*(1-testfrac))
-    # train = edge.iloc[:splitpoint]['SACR_SUNN_out']
-    # test = edge.iloc[splitpoint:]['SACR_SUNN_out']
-    scaler = StandardScaler()
-    # print(scaler.fit(edge['SACR_SUNN_out'].to_frame()))
-    # print(scaler.mean_)
-    scaled_data = pd.DataFrame(
-        np.round(
-            scaler.fit_transform(edge['SACR_SUNN_out'].to_frame()),
-              4))
-    print(scaled_data)
-    print(scaler.mean_)
-    train = scaled_data.iloc[:splitpoint]
-    test = scaled_data.iloc[splitpoint:]
+    train = edge.iloc[:splitpoint]['SACR_SUNN_out']
+    test = edge.iloc[splitpoint:]['SACR_SUNN_out']
     datas.append((train, test))
-    return dict(zip(datasets,datas)), scaler
+    return dict(zip(datasets,datas))
 
 def get_scaled_dataset(n=-1,testfrac=0.15, predict_steps=1000, egress = 'SACR', ingress = 'SUNN'):
     datasets = []
@@ -64,17 +53,38 @@ def get_scaled_dataset(n=-1,testfrac=0.15, predict_steps=1000, egress = 'SACR', 
     datasets.append(edge_name)
     # splitpoint = len(edge) - predict_steps
     splitpoint = int(len(edge)*(1-testfrac))
-    scaler = StandardScaler()
+    scaler = MinMaxScaler()
     scaled_data = pd.DataFrame(
         np.round(
             scaler.fit_transform(edge['SACR_SUNN_out'].to_frame()),
-              2))[0]
+              4))[0]
     print(scaled_data)
-    print(scaler.mean_)
     train = scaled_data.iloc[:splitpoint]
     test = scaled_data.iloc[splitpoint:]
     datas.append((train, test))
     return dict(zip(datasets,datas)), scaler
+
+def get_base_dataset(base, n=-1,testfrac=0.15, predict_steps=1000, egress = 'SACR', ingress = 'SUNN'):
+    datasets = []
+    datas = []
+    dg = readData("./datasets/wanT/snmp_2018_1hourinterval.csv")
+    edge = dg.get_edge_data(ingress, egress)['data']
+    edge_name = dg.get_edge_data(ingress, egress)['name']
+    edge['data'] = edge.SACR_SUNN_out.apply(lambda x: format(int(x), '0x'))
+    datasets.append(edge_name)
+    # splitpoint = len(edge) - predict_steps
+    splitpoint = int(len(edge)*(1-testfrac))
+    train = edge['data'].iloc[:splitpoint]
+    test = edge['data'].iloc[splitpoint:]
+    datas.append((train, test))
+    return dict(zip(datasets,datas))
+
+def to_base(number, base):
+    digits = []
+    while number:
+        digits.append(number % base)
+        number //= base
+    return list(reversed(digits))
 
 def main():
     x = get_scaled_dataset()

@@ -73,7 +73,8 @@ output_dir = 'outputs/want'
 os.makedirs(output_dir, exist_ok=True)
 
 start_time = time.time()
-datasets, scaler = get_scaled_dataset()
+# datasets, scaler = get_scaled_dataset()
+datasets = get_want_dataset()
 loading_time = time.time() - start_time
 print(f"Loading datasets took {loading_time:.2f} seconds")
 for dsname,data in datasets.items():
@@ -96,7 +97,8 @@ for dsname,data in datasets.items():
             print(f"Starting {dsname} {model}")
             hypers = list(grid_iter(model_hypers[model]))
         parallel = True if is_gpt(model) else False
-        num_samples = 20 if is_gpt(model) else 100
+        # num_samples = 20 if is_gpt(model) else 100
+        num_samples = 1
         hyper_start_time = time.time() - start_time
         print(f"Starting hyperparameter tuning after {hyper_start_time:.2f} seconds")
 
@@ -115,7 +117,7 @@ for dsname,data in datasets.items():
             print(e)
             continue
         with open(f'{output_dir}/{dsname}.pkl','wb') as f:
-            out_dict['scaler'] = scaler
+            # out_dict['scaler'] = scaler
             pickle.dump(out_dict,f)
     
 
