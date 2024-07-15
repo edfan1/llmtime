@@ -98,7 +98,7 @@ for dsname,data in datasets.items():
             hypers = list(grid_iter(model_hypers[model]))
         parallel = True if is_gpt(model) else False
         # num_samples = 20 if is_gpt(model) else 100
-        num_samples = 5
+        num_samples = 1
         hyper_start_time = time.time() - start_time
         print(f"Starting hyperparameter tuning after {hyper_start_time:.2f} seconds")
 
