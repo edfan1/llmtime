@@ -165,6 +165,7 @@ def generate_predictions(
             return inv_transform(pred)
         else:
             return None
+    print('Prediction generation beginning...')
     preds = [[completion_to_pred(completion, scaler.inv_transform) for completion in completions] for completions, scaler in zip(completions_list, scalers)]
     return preds, completions_list, input_strs
 

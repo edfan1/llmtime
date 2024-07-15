@@ -137,9 +137,11 @@ def llama_completion_fn(
     avg_tokens_per_step = len(tokenize_fn(input_str, model)['input_ids']) / len(input_str.split(settings.time_sep))
     max_tokens = int(avg_tokens_per_step*steps)
     
+    print('Beginning get model and tokenizer')
     model, tokenizer = get_model_and_tokenizer(model, cache_model=cache_model)
 
     gen_strs = []
+    print('Beginning string generation')
     for _ in tqdm(range(num_samples // batch_size)):
         batch = tokenizer(
             [input_str], 
@@ -169,4 +171,5 @@ def llama_completion_fn(
             skip_special_tokens=True, 
             clean_up_tokenization_spaces=False
         )
+    print('Done genning strings')
     return gen_strs
