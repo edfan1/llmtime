@@ -225,6 +225,8 @@ def get_llmtime_predictions_data(train, test, model, settings, num_samples=10, t
     input_arrs, input_strs = zip(*[truncate_input(input_array, input_str, settings, model, test_len) for input_array, input_str in zip(input_arrs, input_strs)])
     print('******************************************\nInput arrays:')
     print(input_arrs)
+    print('******************************************\nInput strings:')
+    print(input_strs)
     
 
 
