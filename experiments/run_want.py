@@ -76,14 +76,14 @@ start_time = time.time()
 # datasets, scaler = get_scaled_dataset()
 datasets = get_want_dataset()
 loading_time = time.time() - start_time
+dsindex = 0
 print(f"Loading datasets took {loading_time:.2f} seconds")
 for dsname,data in datasets.items():
     train, test = data
-    if os.path.exists(f'{output_dir}/{dsname}.pkl'):
-        with open(f'{output_dir}/{dsname}.pkl','rb') as f:
-            out_dict = pickle.load(f)
-    else:
-        out_dict = {}
+    while os.path.exists(f'{output_dir}/{dsname}{str(dsindex)}.pkl'):
+        dsindex += 1
+        
+    out_dict = {}
     
     for model in ['llama-7b']:
         if model in out_dict and not is_gpt(model):
@@ -116,7 +116,7 @@ for dsname,data in datasets.items():
             print(f"Failed {dsname} {model}")
             print(e)
             continue
-        with open(f'{output_dir}/{dsname}.pkl','wb') as f:
+        with open(f'{output_dir}/{dsname}{str(dsindex)}.pkl','wb') as f:
             # out_dict['scaler'] = scaler
             pickle.dump(out_dict,f)
     
