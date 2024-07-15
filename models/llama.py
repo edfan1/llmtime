@@ -59,6 +59,10 @@ def get_model_and_tokenizer(model_name, cache_model=False):
         device_map="auto",   
         torch_dtype=torch.float16,
     )
+
+    # fix for nan
+    model.bfloat16()
+
     model.eval()
     if cache_model:
         loaded[model_name] = model, tokenizer
