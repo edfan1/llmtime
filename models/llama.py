@@ -156,7 +156,12 @@ def llama_completion_fn(
         good_tokens = [tokenizer.convert_tokens_to_ids(token) for token in good_tokens_str]
         # good_tokens += [tokenizer.eos_token_id]
         bad_tokens = [i for i in range(len(tokenizer)) if i not in good_tokens]
+        print('Good Tokens')
+        print(good_tokens)
+        print('Bad Tokens')
+        print(bad_tokens)
 
+        print('Begin generate_ids')
         generate_ids = model.generate(
             **batch,
             do_sample=True,
@@ -166,6 +171,8 @@ def llama_completion_fn(
             bad_words_ids=[[t] for t in bad_tokens],
             renormalize_logits=True,
         )
+
+        print(gen_strs)
         gen_strs += tokenizer.batch_decode(
             generate_ids[:, num_input_ids:],
             skip_special_tokens=True, 
