@@ -15,6 +15,7 @@ import time
 import gc
 import torch
 import gc
+import matplotlib.pyplot as plt
 
 torch.cuda.empty_cache()
 gc.collect()
