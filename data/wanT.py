@@ -7,6 +7,7 @@ import datasets
 from datasets import load_dataset
 import os
 import pickle
+import matplotlib.pyplot as plt
 
 def readData(fileName, timeCol=0):
     DG = nx.DiGraph()
@@ -45,6 +46,28 @@ def get_want_dataset(n=-1,testfrac=0.15, predict_steps=1000, egress = 'SACR', in
     datas.append((train, test))
     return dict(zip(datasets,datas))
 
+def get_mean_dataset(n=-1,testfrac=0.15, predict_steps=1000, egress = 'SACR', ingress = 'SUNN'):
+    datasets = []
+    datas = []
+    dg = readData("./datasets/wanT/snmp_2018_1hourinterval.csv")
+    edge = dg.get_edge_data(ingress, egress)['data']
+    edge_name = dg.get_edge_data(ingress, egress)['name']
+    datasets.append(edge_name)
+    print(edge)
+    print(edge['SACR_SUNN_out'].sub(edge['SACR_SUNN_out'].mean()))
+    edge['SACR_SUNN_out'] = edge['SACR_SUNN_out'].sub(edge['SACR_SUNN_out'].mean())
+    plt.figure(figsize=(8, 6), dpi=100)
+    plt.plot(edge['SACR_SUNN_out'], color='black')
+    plt.show()
+    # edge = edge.iloc[:1024]
+    # splitpoint = len(edge) - predict_steps
+    splitpoint = int(len(edge)*(1-testfrac))
+    train = edge.iloc[:splitpoint]['SACR_SUNN_out']
+    test = edge.iloc[splitpoint:]['SACR_SUNN_out']
+    datas.append((train, test))
+    return dict(zip(datasets,datas))
+
+
 def get_scaled_dataset(n=-1,testfrac=0.15, predict_steps=1000, egress = 'SACR', ingress = 'SUNN'):
     datasets = []
     datas = []
@@ -54,12 +77,15 @@ def get_scaled_dataset(n=-1,testfrac=0.15, predict_steps=1000, egress = 'SACR', 
     datasets.append(edge_name)
     # splitpoint = len(edge) - predict_steps
     splitpoint = int(len(edge)*(1-testfrac))
-    scaler = MinMaxScaler()
+    scaler = RobustScaler()
     scaled_data = pd.DataFrame(
         np.round(
             scaler.fit_transform(edge['SACR_SUNN_out'].to_frame()),
               4))[0]
     print(scaled_data)
+    plt.figure(figsize=(8, 6), dpi=100)
+    plt.plot(scaled_data, color='black')
+    plt.show()
     train = scaled_data.iloc[:splitpoint]
     test = scaled_data.iloc[splitpoint:]
     datas.append((train, test))
@@ -88,7 +114,7 @@ def to_base(number, base):
     return list(reversed(digits))
 
 def main():
-    x = get_want_dataset()
+    x = get_scaled_dataset()
     print(x)
 
 if __name__ == '__main__':
