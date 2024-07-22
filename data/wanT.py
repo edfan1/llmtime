@@ -38,7 +38,7 @@ def get_want_dataset(n=-1,testfrac=0.15, predict_steps=1000, egress = 'SACR', in
     edge = dg.get_edge_data(ingress, egress)['data']
     edge_name = dg.get_edge_data(ingress, egress)['name']
     datasets.append(edge_name)
-    # edge = edge.iloc[:1024]
+    edge = edge.iloc[:2048]
     # splitpoint = len(edge) - predict_steps
     splitpoint = int(len(edge)*(1-testfrac))
     train = edge.iloc[:splitpoint]['SACR_SUNN_out']
