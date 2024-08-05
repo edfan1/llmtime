@@ -57,11 +57,9 @@ def get_model_and_tokenizer(model_name, cache_model=False):
     model = LlamaForCausalLM.from_pretrained(
         llama2_model_string(model_size, chat),
         device_map="auto",   
-        torch_dtype=torch.float16,
+        # float16 can cause nan
+        torch_dtype=torch.bfloat16,
     )
-
-    # fix for nan
-    model.bfloat16()
 
     model.eval()
     if cache_model:
