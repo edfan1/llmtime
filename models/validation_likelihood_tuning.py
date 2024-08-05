@@ -31,7 +31,7 @@ def make_validation_dataset(train, n_val, val_length):
     return train_minus_val_list, val_list, n_val
 
 
-def evaluate_hyper(hyper, train_minus_val, val, get_predictions_fn):
+def evaluate_hyper(hyper, train_minus_val, val, get_predictions_fn, **kwargs):
     """Evaluate a set of hyperparameters on the validation set.
 
     Args:
@@ -44,10 +44,10 @@ def evaluate_hyper(hyper, train_minus_val, val, get_predictions_fn):
         float: NLL/D value for the given hyperparameters, averaged over each series.
     """
     assert isinstance(train_minus_val, list) and isinstance(val, list), 'Train minus val and val should be lists of series'
-    return get_predictions_fn(train_minus_val, val, **hyper, num_samples=0)['NLL/D']
+    return get_predictions_fn(train_minus_val, val, **hyper, num_samples=0, kwargs = kwargs)['NLL/D']
 
 
-def get_autotuned_predictions_data(train, test, hypers, num_samples, get_predictions_fn, verbose=False, parallel=True, n_train=None, n_val=None):
+def get_autotuned_predictions_data(train, test, hypers, num_samples, get_predictions_fn, verbose=False, parallel=True, n_train=None, n_val=None, scale = True):
     """
     Automatically tunes hyperparameters based on validation likelihood and retrieves predictions using the best hyperparameters. The validation set is constructed on the fly by splitting the training set.
 
@@ -86,7 +86,7 @@ def get_autotuned_predictions_data(train, test, hypers, num_samples, get_predict
         val_nlls = []
         def eval_hyper(hyper):
             try:
-                return hyper, evaluate_hyper(hyper, train_minus_val, val, get_predictions_fn)
+                return hyper, evaluate_hyper(hyper, train_minus_val, val, get_predictions_fn, kwargs = {'scale': scale})
             except ValueError:
                 return hyper, float('inf')
             

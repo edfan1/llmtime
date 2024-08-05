@@ -210,27 +210,38 @@ def get_llmtime_predictions_data(train, test, model, settings, num_samples=10, t
     test_len = len(test[0])
     assert all(len(t)==test_len for t in test), f'All test series must have same length, got {[len(t) for t in test]}'
 
-    # Create a unique scaler for each series
-    scalers = [get_scaler(train[i].values, alpha=alpha, beta=beta, basic=basic) for i in range(len(train))]
-
-    # transform input_arrs
-    input_arrs = [train[i].values for i in range(len(train))]
-    transformed_input_arrs = np.array([scaler.transform(input_array) for input_array, scaler in zip(input_arrs, scalers)])
-    print('******************************************\nInput arrays:')
-    print(input_arrs)
-    print('******************************************\nTransformed arrays:')
-    print(transformed_input_arrs)
-    # serialize input_arrs
-    input_strs = [serialize_arr(scaled_input_arr, settings) for scaled_input_arr in transformed_input_arrs]
-    # Truncate input_arrs to fit the maximum context length
-    input_arrs, input_strs = zip(*[truncate_input(input_array, input_str, settings, model, test_len) for input_array, input_str in zip(input_arrs, input_strs)])
-    print('******************************************\nInput arrays:')
-    print(input_arrs)
-    print('******************************************\nInput strings:')
-    print(input_strs)
+    if 'scale' in kwargs and kwargs['scale']:
+        # Create a unique scaler for each series
+        scalers = [get_scaler(train[i].values, alpha=alpha, beta=beta, basic=basic) for i in range(len(train))]
+        # transform input_arrs
+        input_arrs = [train[i].values for i in range(len(train))]
+        transformed_input_arrs = np.array([scaler.transform(input_array) for input_array, scaler in zip(input_arrs, scalers)])
+        print('******************************************\nInput arrays:')
+        print(input_arrs)
+        print('******************************************\nTransformed arrays:')
+        print(transformed_input_arrs)
+        # serialize input_arrs
+        input_strs = [serialize_arr(scaled_input_arr, settings) for scaled_input_arr in transformed_input_arrs]
+        # Truncate input_arrs to fit the maximum context length
+        input_arrs, input_strs = zip(*[truncate_input(input_array, input_str, settings, model, test_len) for input_array, input_str in zip(input_arrs, input_strs)])
+        print('******************************************\nInput arrays:')
+        print(input_arrs)
+        print('******************************************\nInput strings:')
+        print(input_strs)
+    else:
+        # transform input_arrs
+        input_arrs = np.array([train[i].values for i in range(len(train))])
+        print('******************************************\nInput arrays:')
+        print(input_arrs)
+        # serialize input_arrs
+        input_strs = [serialize_arr(input_arrs, settings)]
+        # Truncate input_arrs to fit the maximum context length
+        input_arrs, input_strs = zip(*[truncate_input(input_array, input_str, settings, model, test_len) for input_array, input_str in zip(input_arrs, input_strs)])
+        print('******************************************\nInput arrays:')
+        print(input_arrs)
+        print('******************************************\nInput strings:')
+        print(input_strs)
     
-
-
     steps = test_len
     samples = None
     medians = None
