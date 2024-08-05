@@ -10,6 +10,8 @@ from models.mistral import tokenize_fn as mistral_tokenize_fn
 from models.mistral_api import mistral_api_completion_fn, mistral_api_nll_fn
 from models.mistral_api import tokenize_fn as mistral_api_tokenize_fn
 
+from models.llama31 import llama31_completion_fn, llama31_nll_fn
+from models.llama31 import tokenize_fn as llama31_tokenize_fn
 
 # Required: Text completion function for each model
 # -----------------------------------------------
@@ -40,6 +42,7 @@ completion_fns = {
     'llama-7b-chat': partial(llama_completion_fn, model='7b-chat'),
     'llama-13b-chat': partial(llama_completion_fn, model='13b-chat'),
     'llama-70b-chat': partial(llama_completion_fn, model='70b-chat'),
+    'llama3.1-8b': partial(llama31_completion_fn, model='8B'),
 }
 
 # Optional: NLL/D functions for each model
@@ -72,6 +75,7 @@ nll_fns = {
     'llama-7b-chat': partial(llama_nll_fn, model='7b-chat'),
     'llama-13b-chat': partial(llama_nll_fn, model='13b-chat'),
     'llama-70b-chat': partial(llama_nll_fn, model='70b-chat'),
+    'llama3.1-8b': partial(llama31_nll_fn, model='8B'),
 }
 
 # Optional: Tokenization function for each model, only needed if you want automatic input truncation.
@@ -94,6 +98,7 @@ tokenization_fns = {
     'llama-7b-chat': partial(llama_tokenize_fn, model='7b-chat'),
     'llama-13b-chat': partial(llama_tokenize_fn, model='13b-chat'),
     'llama-70b-chat': partial(llama_tokenize_fn, model='70b-chat'),
+    'llama3.1-8b': partial(llama31_tokenize_fn, model='8B'),
 }
 
 # Optional: Context lengths for each model, only needed if you want automatic input truncation.
@@ -110,4 +115,5 @@ context_lengths = {
     'llama-7b-chat': 4096,
     'llama-13b-chat': 4096,
     'llama-70b-chat': 4096,
+    'llama3.1-8b': 128000,
 }
