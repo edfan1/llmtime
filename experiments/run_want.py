@@ -28,42 +28,22 @@ llama_hypers = dict(
     settings=SerializerSettings(base=10, prec=3, time_sep=',', bit_sep='', plus_sign='', minus_sign='-', signed=True), 
 )
 
-gp_hypers = dict(lr=[5e-3, 1e-2, 5e-2, 1e-1])
-
-arima_hypers = dict(p=[12,20,30], d=[1,2], q=[0,1,2])
-
-TCN_hypers = dict(in_len=[10, 100, 400], out_len=[1],
-    kernel_size=[3, 5], num_filters=[1, 3], 
-    likelihood=['laplace', 'gaussian']
-)
-
-NHITS_hypers = dict(in_len=[10, 100, 400], out_len=[1],
-    layer_widths=[64, 16], num_layers=[1, 2], 
-    likelihood=['laplace', 'gaussian']
-)
-
-
-NBEATS_hypers = dict(in_len=[10, 100, 400], out_len=[1],
-    layer_widths=[64, 16], num_layers=[1, 2], 
-    likelihood=['laplace', 'gaussian']
+llama31_hypers = dict(
+    temp=1.0,
+    alpha=0.99,
+    beta=0.3,
+    basic=False,
+    settings=SerializerSettings(base=10, prec=3, time_sep=',', bit_sep='', plus_sign='', minus_sign='-', signed=True), 
 )
 
 model_hypers = {
-    'gp': gp_hypers,
-    'arima': arima_hypers,
-    'TCN': TCN_hypers,
-    'N-BEATS': NBEATS_hypers,
-    'N-HiTS': NHITS_hypers,
     'llama-7b': {'model': 'llama-7b', **llama_hypers},
+    'llama3.1-8b': {'model': 'llama3.1-8b', **llama31_hypers},
 }
 
 model_predict_fns = {
-    'gp': get_gp_predictions_data,
-    'arima': get_arima_predictions_data,
-    'TCN': get_TCN_predictions_data,
-    'N-BEATS': get_NBEATS_predictions_data,
-    'N-HiTS': get_NHITS_predictions_data,
     'llama-7b': get_llmtime_predictions_data,
+    'llama3.1-8b': get_llmtime_predictions_data,
 }
 
 def is_gpt(model):
@@ -86,7 +66,7 @@ for dsname,data in datasets.items():
         
     out_dict = {}
     
-    for model in ['llama-7b']:
+    for model in ['llama3.1-8b']:
         if model in out_dict and not is_gpt(model):
             if out_dict[model]['samples'] is not None:
                 print(f"Skipping {dsname} {model}")
@@ -99,7 +79,7 @@ for dsname,data in datasets.items():
             hypers = list(grid_iter(model_hypers[model]))
         parallel = True if is_gpt(model) else False
         # num_samples = 20 if is_gpt(model) else 100
-        num_samples = 1
+        num_samples = 5
         hyper_start_time = time.time() - start_time
         print(f"Starting hyperparameter tuning after {hyper_start_time:.2f} seconds")
 
