@@ -30,10 +30,10 @@ parser.add_argument(
     help="Use or don't use scaler"
 )
 args = parser.parse_args()
-scaler = True
+scale = True
 if args.scale == "f":
     scale = False
-print(scaler)
+print(scale)
 
 llama_hypers = dict(
     temp=1.0,
@@ -48,7 +48,7 @@ llama31_hypers = dict(
     alpha=0.99,
     beta=0.3,
     basic=False,
-    settings=SerializerSettings(base=10, prec=3, time_sep=',', bit_sep='', plus_sign='', minus_sign='-', signed=True), 
+    settings=SerializerSettings(base=10, prec=3, time_sep=',', bit_sep='', plus_sign='', minus_sign='-', signed=True, max_val=1e11), 
 )
 
 model_hypers = {
