@@ -4,7 +4,7 @@ from jax import grad,vmap
 from tqdm import tqdm
 import argparse
 from transformers import (
-    AutoModelForCasualLM, 
+    AutoModelForCausalLM, 
     AutoTokenizer, 
 )
 from data.serialize import serialize_arr, deserialize_str, SerializerSettings
@@ -54,7 +54,7 @@ def get_model_and_tokenizer(model_name, cache_model=False):
 
     tokenizer = get_tokenizer(model_name)
 
-    model = AutoModelForCasualLM.from_pretrained(
+    model = AutoModelForCausalLM.from_pretrained(
         llama31_model_string(model_size, chat),
         device_map="auto",   
         torch_dtype=torch.bfloat16,
