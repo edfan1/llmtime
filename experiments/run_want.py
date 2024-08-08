@@ -33,6 +33,7 @@ args = parser.parse_args()
 scaler = True
 if args.scale == "f":
     scale = False
+print(scaler)
 
 llama_hypers = dict(
     temp=1.0,
