@@ -16,9 +16,23 @@ import gc
 import torch
 import gc
 import matplotlib.pyplot as plt
+import argparse
 
 torch.cuda.empty_cache()
 gc.collect()
+
+parser = argparse.ArgumentParser(description='LLMTIME')
+parser.add_argument(
+    "-s",
+    dest = "scale",
+    choices = ["t", "f"],
+    default="t",
+    help="Use or don't use scaler"
+)
+args = parser.parse_args()
+scaler = True
+if args.scale == "f":
+    scale = False
 
 llama_hypers = dict(
     temp=1.0,
@@ -85,7 +99,7 @@ for dsname,data in datasets.items():
 
         try:
             print(torch.cuda.memory_summary(device=None, abbreviated=False))
-            preds = get_autotuned_predictions_data(train, test, hypers, num_samples, model_predict_fns[model], verbose=0, parallel=parallel, scale = False)
+            preds = get_autotuned_predictions_data(train, test, hypers, num_samples, model_predict_fns[model], verbose=0, parallel=parallel, scale = scale)
             print(torch.cuda.memory_summary(device=None, abbreviated=False))
             hyper_end_time = time.time() - (hyper_start_time + start_time)
             print(f"Hyperparameter tuning took {hyper_end_time:.2f} seconds")
