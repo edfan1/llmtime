@@ -31,7 +31,7 @@ def make_validation_dataset(train, n_val, val_length):
     return train_minus_val_list, val_list, n_val
 
 
-def evaluate_hyper(hyper, train_minus_val, val, get_predictions_fn, **kwargs):
+def evaluate_hyper(hyper, train_minus_val, val, get_predictions_fn, scale):
     """Evaluate a set of hyperparameters on the validation set.
 
     Args:
@@ -44,7 +44,7 @@ def evaluate_hyper(hyper, train_minus_val, val, get_predictions_fn, **kwargs):
         float: NLL/D value for the given hyperparameters, averaged over each series.
     """
     assert isinstance(train_minus_val, list) and isinstance(val, list), 'Train minus val and val should be lists of series'
-    return get_predictions_fn(train_minus_val, val, **hyper, num_samples=0, kwargs = kwargs)['NLL/D']
+    return get_predictions_fn(train_minus_val, val, **hyper, num_samples=0, scale = scale)['NLL/D']
 
 
 def get_autotuned_predictions_data(train, test, hypers, num_samples, get_predictions_fn, verbose=False, parallel=True, n_train=None, n_val=None, scale = True):
@@ -86,7 +86,7 @@ def get_autotuned_predictions_data(train, test, hypers, num_samples, get_predict
         val_nlls = []
         def eval_hyper(hyper):
             try:
-                return hyper, evaluate_hyper(hyper, train_minus_val, val, get_predictions_fn, kwargs = {'scale': scale})
+                return hyper, evaluate_hyper(hyper, train_minus_val, val, get_predictions_fn, scale = scale)
             except ValueError:
                 return hyper, float('inf')
             
@@ -116,7 +116,7 @@ def get_autotuned_predictions_data(train, test, hypers, num_samples, get_predict
         best_hyper = hypers[0]
         best_val_nll = float('inf')
     print(f'Sampling with best hyper... {best_hyper} \n with NLL {best_val_nll:3f}')
-    out = get_predictions_fn(train, test, **best_hyper, num_samples=num_samples, n_train=n_train, parallel=parallel)
+    out = get_predictions_fn(train, test, **best_hyper, num_samples=num_samples, n_train=n_train, parallel=parallel, scale = scale)
     out['best_hyper']=convert_to_dict(best_hyper)
     return out
     

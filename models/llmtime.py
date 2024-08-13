@@ -210,6 +210,7 @@ def get_llmtime_predictions_data(train, test, model, settings, num_samples=10, t
     test_len = len(test[0])
     assert all(len(t)==test_len for t in test), f'All test series must have same length, got {[len(t) for t in test]}'
 
+    print(kwargs)
     if 'scale' in kwargs and kwargs['scale']:
         # Create a unique scaler for each series
         scalers = [get_scaler(train[i].values, alpha=alpha, beta=beta, basic=basic) for i in range(len(train))]
@@ -234,7 +235,9 @@ def get_llmtime_predictions_data(train, test, model, settings, num_samples=10, t
         print('******************************************\nInput arrays:')
         print(input_arrs)
         # serialize input_arrs
-        input_strs = [serialize_arr(input_arrs, settings)]
+        input_strs = [serialize_arr(scaled_input_arr, settings) for scaled_input_arr in input_arrs]
+        print("Serialize done.")
+        print(input_strs)
         # Truncate input_arrs to fit the maximum context length
         input_arrs, input_strs = zip(*[truncate_input(input_array, input_str, settings, model, test_len) for input_array, input_str in zip(input_arrs, input_strs)])
         print('******************************************\nInput arrays:')
