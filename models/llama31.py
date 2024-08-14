@@ -8,6 +8,7 @@ from transformers import (
     AutoTokenizer, 
 )
 from data.serialize import serialize_arr, deserialize_str, SerializerSettings
+import os
 
 DEFAULT_EOS_TOKEN = "</s>"
 DEFAULT_BOS_TOKEN = "<s>"
@@ -134,9 +135,10 @@ def llama31_completion_fn(
     top_p=0.9,
     cache_model=True
 ):
+    os.environ["TOKENIZER_PARALLELISM"] = "false"
     avg_tokens_per_step = len(tokenize_fn(input_str, model)['input_ids']) / len(input_str.split(settings.time_sep))
     max_tokens = int(avg_tokens_per_step*steps)
-    
+
     print('Beginning get model and tokenizer')
     model, tokenizer = get_model_and_tokenizer(model, cache_model=cache_model)
 
