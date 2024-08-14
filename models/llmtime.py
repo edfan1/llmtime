@@ -210,6 +210,7 @@ def get_llmtime_predictions_data(train, test, model, settings, num_samples=10, t
     test_len = len(test[0])
     assert all(len(t)==test_len for t in test), f'All test series must have same length, got {[len(t) for t in test]}'
 
+    scalers = None
     print(kwargs)
     if 'scale' in kwargs and kwargs['scale']:
         # Create a unique scaler for each series
