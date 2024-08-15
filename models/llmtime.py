@@ -251,7 +251,12 @@ def get_llmtime_predictions_data(train, test, model, settings, num_samples=10, t
     medians = None
     completions_list = None
     if num_samples > 0:
-        preds, completions_list, input_strs = generate_predictions(completion_fn, input_strs, steps, settings, scalers,
+        if 'scale' in kwargs and kwargs['scale']:
+            preds, completions_list, input_strs = generate_predictions(completion_fn, input_strs, steps, settings, scalers,
+                                                                    num_samples=num_samples, temp=temp, 
+                                                                    parallel=parallel, **kwargs)
+        else: 
+            reds, completions_list, input_strs = generate_predictions(completion_fn, input_strs, steps, settings,
                                                                     num_samples=num_samples, temp=temp, 
                                                                     parallel=parallel, **kwargs)
         samples = [pd.DataFrame(preds[i], columns=test[i].index) for i in range(len(preds))]
@@ -267,8 +272,13 @@ def get_llmtime_predictions_data(train, test, model, settings, num_samples=10, t
         'completions_list': completions_list,
         'input_strs': input_strs,
     }
-    # Compute NLL/D on the true test series conditioned on the (truncated) input series
-    if nll_fn is not None:
-        BPDs = [nll_fn(input_arr=input_arrs[i], target_arr=test[i].values, settings=settings, transform=scalers[i].transform, count_seps=True, temp=temp) for i in range(len(train))]
-        out_dict['NLL/D'] = np.mean(BPDs)
+
+    if 'scale' in kwargs and kwargs['scale']:
+        # Compute NLL/D on the true test series conditioned on the (truncated) input series
+        if nll_fn is not None:
+            BPDs = [nll_fn(input_arr=input_arrs[i], target_arr=test[i].values, settings=settings, transform=scalers[i].transform, count_seps=True, temp=temp) for i in range(len(train))]
+            out_dict['NLL/D'] = np.mean(BPDs)
+    else:
+        out_dict['NLL/D'] = None
+    
     return out_dict
