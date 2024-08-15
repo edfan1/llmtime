@@ -45,6 +45,7 @@ def get_tokenizer(model):
     return tokenizer
 
 def get_model_and_tokenizer(model_name, cache_model=False):
+    torch.cuda.empty_cache()
     if model_name in loaded:
         return loaded[model_name]
     name_parts = model_name.split("-")
@@ -136,6 +137,7 @@ def llama31_completion_fn(
     cache_model=True
 ):
     os.environ["TOKENIZER_PARALLELISM"] = "false"
+    os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:18432"
     avg_tokens_per_step = len(tokenize_fn(input_str, model)['input_ids']) / len(input_str.split(settings.time_sep))
     max_tokens = int(avg_tokens_per_step*steps)
 
