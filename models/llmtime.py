@@ -256,7 +256,7 @@ def get_llmtime_predictions_data(train, test, model, settings, num_samples=10, t
                                                                     num_samples=num_samples, temp=temp, 
                                                                     parallel=parallel, **kwargs)
         else: 
-            reds, completions_list, input_strs = generate_predictions(completion_fn, input_strs, steps, settings,
+            preds, completions_list, input_strs = generate_predictions(completion_fn, input_strs, steps, settings, scalers = None,
                                                                     num_samples=num_samples, temp=temp, 
                                                                     parallel=parallel, **kwargs)
         samples = [pd.DataFrame(preds[i], columns=test[i].index) for i in range(len(preds))]
