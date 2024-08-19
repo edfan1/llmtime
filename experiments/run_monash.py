@@ -69,7 +69,7 @@ datasets_to_run =  [
     "nn5_daily"
 ]
 
-max_history_len = 10000
+max_history_len = 500
 start_time = time.time()
 datasets = get_datasets()
 loading_time = time.time() - start_time
@@ -93,7 +93,7 @@ for dsname in datasets_to_run:
             print(f"Starting {dsname} {model}")
             hypers = list(grid_iter(model_hypers[model]))
         parallel = True if is_gpt(model) else False
-        num_samples = 3
+        num_samples = 5
         hyper_start_time = time.time() - start_time
         print(f"Starting hyperparameter tuning after {hyper_start_time:.2f} seconds")
         
