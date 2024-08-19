@@ -29,9 +29,19 @@ llama_hypers = dict(
     settings=SerializerSettings(base=10, prec=3, time_sep=',', bit_sep='', plus_sign='', minus_sign='-', signed=True), 
 )
 
+
+llama31_hypers = dict(
+    temp=1.0,
+    alpha=0.99,
+    beta=0.3,
+    basic=False,
+    settings=SerializerSettings(base=10, prec=3, time_sep=',', bit_sep='', plus_sign='', minus_sign='-', signed=True, max_val=1e11), 
+)
+
 model_hypers = {
     # 'text-davinci-003': {'model': 'text-davinci-003', **gpt3_hypers},
     'llama-7b': {'model': 'llama-7b', **llama_hypers},
+    'llama3.1-8b': {'model': 'llama3.1-8b', **llama31_hypers},
     # 'llama-70b': {'model': 'llama-70b', **llama_hypers},
 }
 
@@ -39,6 +49,7 @@ model_hypers = {
 model_predict_fns = {
     # 'text-davinci-003': get_llmtime_predictions_data,
     'llama-7b': get_llmtime_predictions_data,
+    'llama3.1-8b': get_llmtime_predictions_data,
     # 'llama-70b': get_llmtime_predictions_data,
 }
 
@@ -51,16 +62,14 @@ os.makedirs(output_dir, exist_ok=True)
 
 models_to_run = [
     # 'text-davinci-003',
-    'llama-7b',
+    'llama-3.1-8b',
     # 'llama-70b',
 ]
 datasets_to_run =  [
-    "weather", "covid_deaths", "solar_weekly", "tourism_monthly", "australian_electricity_demand", "pedestrian_counts",
-    "traffic_hourly", "hospital", "fred_md", "tourism_yearly", "tourism_quarterly", "us_births",
-    "nn5_weekly", "traffic_weekly", "saugeenday", "cif_2016", "bitcoin", "sunspot", "nn5_daily"
+    "nn5_daily"
 ]
 
-max_history_len = 500
+max_history_len = 10000
 start_time = time.time()
 datasets = get_datasets()
 loading_time = time.time() - start_time
@@ -84,7 +93,7 @@ for dsname in datasets_to_run:
             print(f"Starting {dsname} {model}")
             hypers = list(grid_iter(model_hypers[model]))
         parallel = True if is_gpt(model) else False
-        num_samples = 5
+        num_samples = 3
         hyper_start_time = time.time() - start_time
         print(f"Starting hyperparameter tuning after {hyper_start_time:.2f} seconds")
         
