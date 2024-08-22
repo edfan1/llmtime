@@ -7,6 +7,34 @@ from models.utils import grid_iter
 from models.llmtime import get_llmtime_predictions_data
 import numpy as np
 import time 
+import argparse
+
+
+parser = argparse.ArgumentParser(description='LLMTIME')
+parser.add_argument(
+    "-s",
+    dest = "scale",
+    choices = ["t", "f"],
+    default="t",
+    help="Use or don't use scaler"
+)
+parser.add_arugment(
+    "-d",
+    dest = "dataset",
+    default = "nn5_daily",
+    help="Dataset name"
+)
+parser.add_argument(
+    "-l",
+    dest = "max_len",
+    default = None,
+    help = "Max length of dataset"
+)
+args = parser.parse_args()
+scale = True
+if args.scale == "f":
+    scale = False
+print(scale)
 
 # import openai
 # openai.api_key = os.environ['OPENAI_API_KEY']
@@ -66,10 +94,16 @@ models_to_run = [
     # 'llama-70b',
 ]
 datasets_to_run =  [
-    "nn5_daily"
+    args.dataset
 ]
 
-max_history_len = 500
+# datasets_to_run =  [
+#     "weather", "covid_deaths", "solar_weekly", "tourism_monthly", "australian_electricity_demand", "pedestrian_counts",
+#     "traffic_hourly", "hospital", "fred_md", "tourism_yearly", "tourism_quarterly", "us_births",
+#     "nn5_weekly", "traffic_weekly", "saugeenday", "cif_2016", "bitcoin", "sunspot", "nn5_daily"
+# ]
+
+
 start_time = time.time()
 datasets = get_datasets()
 loading_time = time.time() - start_time
@@ -78,7 +112,8 @@ for dsname in datasets_to_run:
     print(f"Starting {dsname}")
     data = datasets[dsname]
     train, test = data
-    train = [x[-max_history_len:] for x in train]
+    if args.max_len != None:
+        train = [x[-int(args.max_len):] for x in train]
     if os.path.exists(f'{output_dir}/{dsname}.pkl'):
         with open(f'{output_dir}/{dsname}.pkl','rb') as f:
             out_dict = pickle.load(f)
