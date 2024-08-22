@@ -18,7 +18,7 @@ parser.add_argument(
     default="t",
     help="Use or don't use scaler"
 )
-parser.add_arugment(
+parser.add_argument(
     "-d",
     dest = "dataset",
     default = "nn5_daily",
