@@ -62,7 +62,7 @@ os.makedirs(output_dir, exist_ok=True)
 
 models_to_run = [
     # 'text-davinci-003',
-    'llama-3.1-8b',
+    'llama3.1-8b',
     # 'llama-70b',
 ]
 datasets_to_run =  [
